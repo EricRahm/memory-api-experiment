@@ -1,0 +1,16 @@
+[
+  {
+    "namespace": "memory",
+    "description": "API for querying browser memory statistics",
+    "permissions": ["experiments.memory"],
+    "functions": [
+      {
+        "name": "getInfo",
+        "type": "function",
+        "description": "Returns an object containing memory info",
+        "async": true,
+        "parameters": []
+      }
+    ]
+  }
+]
