@@ -11,6 +11,19 @@
         "async": true,
         "parameters": []
       }
+    ],
+    "events": [
+      {
+        "name": "onLowMemory",
+        "type": "function",
+        "description": "Event fired when memory is low.",
+        "parameters": [
+          {
+            "name": "reason",
+            "type": "string"
+          }
+        ]
+      }
     ]
   }
 ]
