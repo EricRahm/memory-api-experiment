@@ -42,12 +42,27 @@ add_task(function* test_getInfo() {
   //
   // Broadcasts a 'ready' message when loaded.
   function background() {
+    const onLowMem = (data) => {
+      browser.test.sendMessage("onLowMemory", {data});
+    };
+
     browser.test.onMessage.addListener(function(msg, args) {
       let match = msg.match(/^(\w+)\.request$/);
       if (!match) {
         return;
       }
       let cmd = match[1];
+
+      if (cmd == "registerLowMem") {
+        browser.memory.onLowMemory.addListener(onLowMem);
+        browser.test.sendMessage(`${cmd}.done`, {});
+        return;
+      } else if (cmd == "unregisterLowMem") {
+        browser.memory.onLowMemory.removeListener(onLowMem);
+        browser.test.sendMessage(`${cmd}.done`, {});
+        return;
+      }
+
       Promise.resolve().then(() => browser.memory[cmd](...args))
         .then(results => {
           browser.test.sendMessage(`${cmd}.done`, {results});
@@ -86,6 +101,19 @@ add_task(function* test_getInfo() {
   equal(results.hasOwnProperty("Parent"), true);
   equal(results["Parent"].uss > 0, true);
   equal(results["Parent"].rss > 0, true);
+
+  response = yield run(privilegedExtension, "registerLowMem");
+  equal(Object.keys(response).length === 0, true);
+
+  // Trigger a low memory event
+  let p = privilegedExtension.awaitMessage("onLowMemory");
+  Services.obs.notifyObservers(null, "memory-pressure", "heap-minimize");
+  response = yield p;
+  equal(response.hasOwnProperty("data"), true);
+  equal(response.data, "heap-minimize");
+
+  response = yield run(privilegedExtension, "unregisterLowMem");
+  equal(Object.keys(response).length === 0, true);
 
   yield privilegedExtension.unload();
   apiExtension.uninstall();
