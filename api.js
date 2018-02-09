@@ -84,6 +84,16 @@ class API extends ExtensionAPI {
           return Memory.summary();
         },
 
+        // Provides the same functionality as about:memory's "minimize memory
+        // usage" button.
+        async minimizeMemoryUsage() {
+          return new Promise((resolve, reject) => {
+            const mgr = Cc["@mozilla.org/memory-reporter-manager;1"]
+                           .getService(Ci.nsIMemoryReporterManager);
+            mgr.minimizeMemoryUsage(resolve);
+          }).then(() => { return "minimize finished"; });
+        },
+
         // Event that is fired when a low memory signal is recieved.
         onLowMemory: new ExtensionCommon.EventManager(
           context, "memory.onLowMemory", fire => {
@@ -95,7 +105,6 @@ class API extends ExtensionAPI {
 
         // Other possible functions:
         //   - dump / process gc/cc logs
-        //   - minimize memory
         //   - about memory reports
       }
     };

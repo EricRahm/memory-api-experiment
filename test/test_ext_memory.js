@@ -115,6 +115,11 @@ add_task(function* test_getInfo() {
   response = yield run(privilegedExtension, "unregisterLowMem");
   equal(Object.keys(response).length === 0, true);
 
+  // Try minimizing memory.
+  response = yield run(privilegedExtension, "minimizeMemoryUsage");
+  results = response["results"];
+  equal(results, "minimize finished");
+
   yield privilegedExtension.unload();
   apiExtension.uninstall();
 });

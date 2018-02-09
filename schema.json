@@ -10,6 +10,13 @@
         "description": "Returns an object containing memory info",
         "async": true,
         "parameters": []
+      },
+      {
+        "name": "minimizeMemoryUsage",
+        "type": "function",
+        "description": "Lets the browser knwo that it should minimize memory usage. This will trigger an onLowMemory event.",
+        "async": true,
+        "parameters": []
       }
     ],
     "events": [
